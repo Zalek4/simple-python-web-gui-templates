@@ -5,21 +5,20 @@ from fastapi.staticfiles import StaticFiles
 import webview
 from threading import Event, Thread
 from fastapi.templating import Jinja2Templates
+import os
 
 # This is an event tracker we're using to kill the uvicorn server when the app gets closed
 stop_event = Event()
 
-# Define the FastAPI app
+# Define the FastAPI app and window title
 app = FastAPI()
+app_title = "Lute"
 
 # Get the directory for all of our html page templates, and mount our path to the 'static' folder.
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Window title
-app_title = "Lute"
-
-# Loading page is the first thing we load
+# The loading page
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
 	return templates.TemplateResponse("loading.html", {"request": request})

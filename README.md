@@ -1,15 +1,16 @@
-*THIS REPO IS A WORK IN PROGRESS*
+***PLEASE NOTE - THE CONTENT OF EACH EXAMPLE FOLDER SHOULD BE COPIED INTO THEIR OWN FOLDERS WHEN TESTING. OTHERWISE, WHEN RUNNING 'MAIN.PY', SOME RELATIVE PATH REFERENCES WILL BE BROKEN. THE EXAMPLES WON'T RUN, YOU WILL BE SAD, AND I WILL BE SAD.***
+___
 # A Note on Web GUI's For Python.
 Python is an incredible language. It has a simple syntax, an insane amount of available modules, and an excellent amount of free learning material on the web. 
 
 Even still, it's been suprisingly challenging to find a simple, no frills guide on how to use web languages as a frontend for Python-driven desktop apps. The best one I've come across is by [Will Tejeda](https://www.youtube.com/watch?v=5HSz9EVEstI&t=465s&ab_channel=WillTejeda) - thanks for your straight forward content Will!
 
-This repository is for anyone sick of reading Medium articles that only give you 75% of the information you need to understand what's going on with this stuff. Hopefully, these templates and readme's can help some folks get started. 
+This repository is for anyone sick of reading Medium articles that only give you 75% of the information you need to understand what's going on with this stuff. Hopefully, these templates and guides can help some folks get started. 
 
 The link between a web frontend and a Python backend is suprisingly simple, and you don't need Electron or similar alternatives to do it (but you can totally use those if you want to).
 
 ___
-I AM NOT A PROFESSIONAL PROGRAMMER, AND MY UNDERSTANDING OF THESE TOOLS ISN'T PERFECT. SOME OF THE EXPLAINATIONS IN THIS REPOSITORY MAY BE INACCURATE/SLIGHTLY WRONG.
+***I AM NOT A PROFESSIONAL PROGRAMMER, AND MY UNDERSTANDING OF THESE TOOLS ISN'T PERFECT. SOME OF THE EXPLAINATIONS IN THIS REPOSITORY MAY BE INACCURATE/SLIGHTLY WRONG.***
 ___
 
 # Why Not Just Use Something Like PyQT, Tkinter or Kivy?
@@ -19,7 +20,7 @@ I'm an artist by trade, so I like pretty things. While the above options don't l
 There are *many* modules like the the ones mentioned above that provide robust tools for creating user interfaces completely within Python. If you're looking for the least complicated solution, and aren't worried about granular visual control, then I absolutely recommend something like Tkinter or PyQT.
 
 # Templates in This Repository
-- FastAPI (WIP)
+- FastAPI
 - Flask (WIP)
 - Python-webui (WIP)
 - Flaskwebgui (WIP)

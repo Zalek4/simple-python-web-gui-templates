@@ -1,4 +1,4 @@
-//This creates a timer of 5 seconds. The loading screen will play for that duration, and then load the main program.
+//This creates a timer of 3 seconds. The loading screen will play for that duration, and then load the main program.
 
 let count = 3;
 const timer = setInterval(function() {
