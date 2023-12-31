@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 import webview
 from threading import Event, Thread
 from fastapi.templating import Jinja2Templates
-import os
 
 # This is an event tracker we're using to kill the uvicorn server when the app gets closed
 stop_event = Event()
