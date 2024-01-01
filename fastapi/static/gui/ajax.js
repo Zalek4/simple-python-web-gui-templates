@@ -1,17 +1,33 @@
-function sendData() { 
-    var value = document.getElementById('input').value; 
-    $.ajax({ 
-        url: '/process', 
-        type: 'POST', 
+// Sends a 'GET' request to the specified URL
+function getData() { 
+    $.ajax({
+        url: '/get', 
+        type: 'GET', 
         contentType: 'application/json', 
-        data: JSON.stringify({ 'value': value }), 
-        success: function(response) { 
-            document.getElementById('output_a').innerHTML = response.result_a;
-            document.getElementById('output_b').innerHTML = response.result_b;
-            document.getElementById('output_c').innerHTML = response.returned;
+        success: function(response) {
+            document.getElementById('div1').innerHTML = response['a'];
+            console.log(response)
         }, 
         error: function(error) { 
             console.log(error); 
-        } 
-    }); 
+        }
+    });
+};
+
+// Sends a 'POST' request to the specified URL
+function postData() {
+    let value = 10
+    $.ajax({
+        url: '/post', 
+        type: 'POST', 
+        contentType: 'application/json', 
+        data: JSON.stringify({ 'value' : value }), 
+        success: function(response) {
+            document.getElementById('div2').innerHTML = response['value'];
+            console.log(response)
+        }, 
+        error: function(error) { 
+            console.log(error); 
+        }
+    });
 };
