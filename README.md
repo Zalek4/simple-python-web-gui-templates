@@ -1,5 +1,3 @@
-***PLEASE NOTE - THE CONTENT OF EACH EXAMPLE FOLDER SHOULD BE COPIED INTO THEIR OWN FOLDERS WHEN TESTING. OTHERWISE, WHEN RUNNING 'MAIN.PY', SOME RELATIVE PATH REFERENCES WILL BE BROKEN. THE EXAMPLES WON'T RUN, YOU WILL BE SAD, AND I WILL BE SAD.***
-___
 # A Note on Web GUI's For Python.
 Python is an incredible language. It has a simple syntax, an insane amount of available modules, and an excellent amount of free learning material on the web. 
 
@@ -25,6 +23,19 @@ There are *many* modules like the the ones mentioned above that provide robust t
 - Python-webui (WIP)
 - Flaskwebgui (WIP)
 - Pywebview (WIP)
+
+# Using These Templates
+I recommend either copying the contents of each template into your project repo, or opening the folder of each one you want to try in your IDE of choice. Some funkiness can occure with relative folder paths if you try to run any of these with this entire repo open.
+- First, create a virtual environment in the folder of the template you're using. You can do this by typing the following command into your console after you've CD'd to your repo folder.
+```bash
+python -m venv venv
+```
+- Next, install the required modules using the included requirements.txt file in each template's folder. 
+```bash
+pip install -r requirements.txt
+```
+- Once everything is done installing, you should be able to run the examples by running the 'main.py' file from within your IDE.
+
 
 # The Anatomy of a Web-based Python Desktop App
 The structure is fairly simple, and is composed of 3 parts.
