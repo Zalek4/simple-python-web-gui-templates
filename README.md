@@ -3,9 +3,9 @@ Python is an incredible language. It has a simple syntax, an insane amount of av
 
 Even still, it's been suprisingly challenging to find a simple, no frills guide on how to use web languages as a frontend for Python-driven desktop apps. The best one I've come across is by [Will Tejeda](https://www.youtube.com/watch?v=5HSz9EVEstI&t=465s&ab_channel=WillTejeda) - thanks for your straight forward content Will!
 
-This repository is for anyone sick of reading Medium articles that only give you 75% of the information you need to understand what's going on with this stuff. Hopefully, these templates and guides can help some folks get started. 
-
 The link between a web frontend and a Python backend is suprisingly simple, and you don't need Electron or similar alternatives to do it (but you can totally use those if you want to).
+
+Hopefully, these templates and guides can help some folks get started more easily than I've been able to.
 
 ___
 ***I AM NOT A PROFESSIONAL PROGRAMMER, AND MY UNDERSTANDING OF THESE TOOLS ISN'T PERFECT. SOME OF THE EXPLAINATIONS IN THIS REPOSITORY MAY BE INACCURATE/SLIGHTLY WRONG.***
