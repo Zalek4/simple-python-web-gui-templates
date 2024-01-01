@@ -17,7 +17,7 @@ app_title = "Lute"
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# The loading page
+# Loading page
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
 	return templates.TemplateResponse("loading.html", {"request": request})
