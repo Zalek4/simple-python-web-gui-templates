@@ -17,13 +17,13 @@ In our case, we're not getting too into the weeds to get a basic server running 
 
 All of our imports for the 'main.py' file:
 ```python
-import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-import webview
-from threading import Event, Thread
 from fastapi.templating import Jinja2Templates
+from threading import Event, Thread
+import uvicorn
+import webview
 ```
 
 - First, we create an event tracker. This will let us kill the Uvicorn server when the main window of our program exits.
@@ -56,9 +56,11 @@ if __name__ == "__main__":
 And that's it! Running this code will create a server that we can send requests to in order to pass data to and from our frontend GUI.
 
 ### Pywebview
-[Pywebview](https://pywebview.flowrl.com/) is awesome, and can actually be used without Uvicorn and FastAPI to do pretty much exactly the same thing. In this case we've bypassed that functionality in favor of ASGI/speed. I've found the desktop app implementation of Pywebview is visually cleaner and faster than other options like Flaskwebgui (which is also awesome and can be used with FastAPI/Uvicorn if that's your jam), so that's why I've chosen to run it in some of these templates.
+[Pywebview](https://pywebview.flowrl.com/) is awesome, and can actually be used without Uvicorn and FastAPI to do pretty much exactly the same thing. In this case we've bypassed that functionality in favor of ASGI/speed. 
 
-It's crazy easy to start up a window.
+I've found the desktop app implementation of Pywebview is visually cleaner and faster than other options like Flaskwebgui (which is also awesome and can be used with FastAPI/Uvicorn if that's your jam), so that's why I've chosen to run it in some of these templates.
+
+It's super easy to start up a window.
 - First, we need to define our app as a FastAPI instance.
 ```python
 # main.py
@@ -68,6 +70,8 @@ app = FastAPI()
 ```
 - Second, we need to start the desktop app with the same address:port as our Uvicorn server. We'll add this to our 'if __name__ == "__main__"' check at the bottom of main.py. We also place some logic at the bottom of this if statement to update our stop event when the windows closes, which will kill our Uvicorn server.
 ```python
+# main.py
+
 if __name__ == "__main__":
 	# Start a thread to run the uvicorn server before we try to connect to it with pywebview
 	t = Thread(target=run_server)
@@ -82,9 +86,9 @@ if __name__ == "__main__":
 	stop_event.set()
 ```
 
-And that's it! We now have a Python script that will open a local server, and run a desktop window off of it. Now we add add HTML content to our new app.
+And that's it! We now have a Python script that will open a local server, and run a desktop window connected to it. Now we can add add HTML content to our new app.
 
-- First, we have to tell FastAPI where we keep the rest of our app, since it won't look in our package folder by default. We're also going to be using Jinja2 to set up our pages as templates that FastAPI can use.
+- First, we have to tell FastAPI where we keep the rest of our app, since it won't look in our package folder by default. We're also going to be using Jinja2 to set up our HTML pages as templates that FastAPI can use.
 ```python
 # main.py
 
@@ -93,11 +97,11 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 ```
 
-- Second, we need to create a method to handle each page we want to display. In this case, we're displaying a loading page for 3 seconds, and then we're loading our main app. The 3 second delay is handled in the javascript file attached to 'loading.html'.
+- Second, we need to create a method to handle each page we want to display. In this case, we're displaying a loading page for 3 seconds, and then we're loading our main app page. The 3 second delay is handled in the javascript file attached to 'loading.html'.
 ```python
 # main.py
 
-# The loading page
+# Loading page
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
 	return templates.TemplateResponse("loading.html", {"request": request})
@@ -133,3 +137,18 @@ function switchPage() {
 
 <link rel="stylesheet" href="/static/gui/loading.css">
 ```
+Notice the *'@app.get("/", response_class=HTMLResponse)'* decorator for each of the pages in the Python code. The first argument passed to these (in this case "/", which is the root directory) is the "web" link our local frontend will connect to our backend through.
+
+A more basic decorator/function pair can look like this one from the official docs:
+```python
+@app.get("/hello-world")
+def hello_world():
+    return {"message": "Hello World"}
+```
+This creates a function that will be run when the frontend sends a 'get' request to the '/hello-world' address of our application. These can also be run asyncronously in FastAPI with the 'async' function tag:
+```python
+@app.get("/hello-world")
+async def hello_world():
+    return {"message": "Hello World"}
+```
+And that's it for this quick guide! There's a *ton* more you can do with FastAPI, and I would encourage anyone reading to check out the [official documentation](https://fastapi.tiangolo.com/learn/) for more.

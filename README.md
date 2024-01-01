@@ -25,8 +25,8 @@ There are *many* modules like the the ones mentioned above that provide robust t
 - Pywebview (WIP)
 
 # Using These Templates
-I recommend either copying the contents of each template into your project repo, or opening the folder of each one you want to try in your IDE of choice. Some funkiness can occure with relative folder paths if you try to run any of these with this entire repo open.
-- First, create a virtual environment in the folder of the template you're using. You can do this by typing the following command into your console after you've CD'd to your repo folder.
+I recommend either copying the contents of each template into your main project folder, or opening the folder of each one you want to try in your IDE of choice. Some funkiness can occure with relative folder paths if you try to run any of these with this entire repo open.
+- First, create a virtual environment in the folder of the template you're using. You can do this by running the following command after you've CD'd to your repo/project folder.
 ```bash
 python -m venv venv
 ```
@@ -44,4 +44,4 @@ The structure is fairly simple, and is composed of 3 parts.
 - Frontend (HTML, Javascript and CSS)
     - This is everything the user sees and touches. Buttons, text inputs, graphs, you name it.
 - Server
-    - This handles ferrying data between the frontend and the backend, and can have different levels of visibility depending on the module you're using. Example - Python-webgui allows direct binding of Python functions to HTML elements, whereas FastAPI requires you serve the result of Python functions as JSON data. There is no right or wrong answer here - it all has to do with what your needs/preferences are.
+    - This handles ferrying data between the frontend and the backend, and can have different levels of visibility depending on the module you're using. Example: Python-webui allows direct binding of Python functions to HTML elements, whereas FastAPI requires you serve the result of Python functions as JSON data. There is no right or wrong answer here - it all has to do with what your needs/preferences are.
