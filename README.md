@@ -34,7 +34,7 @@ python -m venv venv
 ```bash
 pip install -r requirements.txt
 ```
-- Once everything is done installing, you should be able to run the examples by running the 'main.py' file from within your IDE.
+- Once everything is done installing, you should be able to run the example you've picked by running the the 'main.py' file from within your IDE.
 
 
 # The Anatomy of a Web-based Python Desktop App
