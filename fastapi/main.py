@@ -15,7 +15,9 @@ stop_event = Event()
 app = FastAPI()
 app_title = "Hello World"
 
-# Define a 'Value' class that contains the format of some info we'll get from Javascript
+# Define a 'Value' class that contains the format of the 
+# info we'll pass back to Javascript in the 'POST'
+# request example below.
 class Value(BaseModel):
 	value: int
 
@@ -42,7 +44,7 @@ def get():
 # Handling an AJAX 'POST' request
 @app.post("/post")
 async def create_item(value: Value):
-    return(f"This is from Javascript : {value}")
+    return(value)
 
 # Run the uvicorn server
 def run_server():
