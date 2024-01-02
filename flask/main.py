@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from threading import Event, Thread
 import webview
 import static.engine.functions as Functions
@@ -6,7 +6,7 @@ import static.engine.functions as Functions
 # This is an event tracker we're using to kill the uvicorn server when the app gets closed
 stop_event = Event()
 
-# Define the FastAPI app and window title
+# Define the Flask app and window title
 app = Flask(__name__)
 app_title = "App Title"
 host = "http://127.0.0.1"
@@ -21,11 +21,16 @@ def loading():
 def home():
 	return render_template("index.html")
 
-@app.route("/request")
-def request():
+@app.route("/get", methods=['GET'])
+def get_request():
 	result = Functions.create_dictionary()
-	print(result)
 	return(result)
+
+@app.route("/post", methods=['POST'])
+def post_request():
+	valueFromJavascript = request.get_json()
+	print(f"This is from Javascript : {valueFromJavascript}")
+	return(jsonify(valueFromJavascript))
 
 # Run the uvicorn server
 def run_server():
