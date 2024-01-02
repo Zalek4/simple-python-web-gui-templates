@@ -17,13 +17,15 @@ In our case, we're not getting too into the weeds to get a basic server running 
 
 All of our imports for the 'main.py' file:
 ```python
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 from threading import Event, Thread
 import uvicorn
 import webview
+import static.engine.functions as Functions
 ```
 
 - First, we create an event tracker. This will let us kill the Uvicorn server when the main window of our program exits.
@@ -145,10 +147,88 @@ A more basic decorator/function pair can look like this one from the official do
 def hello_world():
     return {"message": "Hello World"}
 ```
-This creates a function that will be run when the frontend sends a 'get' request to the '/hello-world' address of our application. These can also be run asyncronously in FastAPI with the 'async' function tag:
+You can use 'app.put', 'app.delete', 'app.patch', 'app.get', and 'app.post' decorators to achieve different functionality. 
+
+In this case, we've created a function that will be run when the frontend sends a 'get' request to the '/hello-world' address of our application. These can also be run asyncronously in FastAPI with the 'async' function tag:
 ```python
 @app.get("/hello-world")
 async def hello_world():
     return {"message": "Hello World"}
 ```
+There is both a 'POST' and a 'GET' http request example in this template:
+```python
+# main.py
+
+# Define a 'Value' class that contains the format of the 
+# info we'll pass back to Javascript in the 'POST'
+# request example below.
+class Value(BaseModel):
+	value: int
+
+# Handling an AJAX 'GET' request
+@app.get("/get")
+def get():
+	result = Functions.create_dictionary()
+	return(result)
+
+# Handling an AJAX 'POST' request
+@app.post("/post")
+async def create_item(value: Value):
+    return(value)
+```
+```javascript
+//ajax.js
+
+// Sends a 'GET' request to the specified URL
+function getData() { 
+    $.ajax({
+        url: '/get', 
+        type: 'GET', 
+        contentType: 'application/json', 
+        success: function(response) {
+            document.getElementById('div1').innerHTML = response['a'];
+            console.log(response)
+        }, 
+        error: function(error) { 
+            console.log(error); 
+        }
+    });
+};
+
+// Sends a 'POST' request to the specified URL
+function postData() {
+    let value = 10
+    $.ajax({
+        url: '/post', 
+        type: 'POST', 
+        contentType: 'application/json', 
+        data: JSON.stringify({ 'value' : value }), 
+        success: function(response) {
+            document.getElementById('div2').innerHTML = response['value'];
+            console.log(response)
+        }, 
+        error: function(error) { 
+            console.log(error); 
+        }
+    });
+};
+```
+```html
+<!--At the bottom of the body of our index.html file-->
+
+<script type="text/javascript" src="/static/gui/ajax.js"></script>
+```
+We can then call these functions with buttons using the HTML below:
+```HTML
+<!--index.html-->
+
+<button id="button1" onclick="getData()">I'm a Button</button>
+<div id="div1"></div>
+<button id="button2" onclick="postData()">I'm another Button</button>
+<div id="div2"></div>
+```
+The 'GET' example gets a dictionary that we generate in our Python 'engine' directory.
+
+The 'POST' example passes data from our frontend Javascript into any Python code we decide to use. In this case, we're reading the number '10' from Javascript, and then returning it into an HTML div. Some more details about using 'POST' requests can be found [here](https://teclado.com/fastapi-for-beginners/receiving-and-returning-data-with-fastapi/).
+
 And that's it for this quick guide! There's a *ton* more you can do with FastAPI, and I would encourage anyone reading to check out the [official documentation](https://fastapi.tiangolo.com/learn/) for more.

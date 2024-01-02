@@ -1,17 +1,25 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 from threading import Event, Thread
 import uvicorn
 import webview
+import static.engine.functions as Functions
 
 # This is an event tracker we're using to kill the uvicorn server when the app gets closed
 stop_event = Event()
 
 # Define the FastAPI app and window title
 app = FastAPI()
-app_title = "Lute"
+app_title = "Hello World"
+
+# Define a 'Value' class that contains the format of the 
+# info we'll pass back to Javascript in the 'POST'
+# request example below.
+class Value(BaseModel):
+	value: int
 
 # Get the directory for all of our html page templates, and mount our path to the 'static' folder.
 templates = Jinja2Templates(directory="templates")
@@ -26,6 +34,17 @@ async def home(request: Request):
 @app.get("/home", response_class=HTMLResponse)
 async def home(request: Request):
 	return templates.TemplateResponse("index.html", {"request": request})
+
+# Handling an AJAX 'GET' request
+@app.get("/get")
+def get():
+	result = Functions.create_dictionary()
+	return(result)
+
+# Handling an AJAX 'POST' request
+@app.post("/post")
+async def create_item(value: Value):
+    return(value)
 
 # Run the uvicorn server
 def run_server():

@@ -1,1 +1,225 @@
 # Flask
+Flask is a web application micro-framework written in Python. It's simple and easy to use, which makes it a great option if you're looking for a server solution to tie a frontend and backend together.
+
+Unlike a FastAPI/Uvicorn combo, Flask uses WSGI standards (Web Server Gateway Interface) as opposed to ASGI standards (Asynchronous Server Gateway Interface). In it's most basic form, this means Flask can't run multiple commands at once, which contributes to it's slower speed compared to FastAPI. It's still an excellent choice when building an application.
+
+In our case, we're not getting too into the weeds to get a basic server running that we can connect to with Pywebview. The code below is all you need. 
+
+All of our imports for the 'main.py' file:
+```python
+from flask import Flask, render_template, jsonify
+from threading import Event, Thread
+import webview
+import static.engine.functions as Functions
+```
+
+- First, we create an event tracker. This will let us kill the Flask server when the main window of our program exits.
+
+```python
+# main.py
+
+# This is an event tracker we're using to kill the uvicorn server when the app gets closed
+stop_event = Event()
+```
+- Second, we define our app, along with the host:port address and window title.
+```python
+# Define the Flask app and window title
+app = Flask(__name__)
+app_title = "App Title"
+host = "http://127.0.0.1"
+port = 5000
+```
+- Third, we create a function to run the Flask server. Flask won't run if we keep the "http://" at the start of the host address, so we use the '.replace' fuction to remove it.
+```python
+# main.py
+
+# Run the flask server
+def run_server():
+	while not stop_event.is_set():
+		app.run(host=host.replace("http://", ""), port=port, use_reloader=False)
+```
+- Forth, we run the function with the Threading module, which allows us to run the Pywebview window immediately after. If we don't start the Flask server like this, the program will never move past the run_server() function, and no window will be created.
+```python
+# main.py
+
+if __name__ == "__main__":
+	# Start a thread to run the uvicorn server before we try to connect to it with pywebview
+	t = Thread(target=run_server)
+	t.daemon = True # this makes it so the server shuts down when the main program exits
+	t.start()
+```
+And that's it! Running this code will create a server that we can send requests to in order to pass data to and from our frontend GUI.
+
+### Pywebview
+[Pywebview](https://pywebview.flowrl.com/) is awesome, and can actually be used without Uvicorn and FastAPI to do pretty much exactly the same thing. In this case we've bypassed that functionality.
+
+I've found the desktop app implementation of Pywebview is visually cleaner and faster than other options like Flaskwebgui (which is also awesome and can be used with Flask too if that's your jam), so that's why I've chosen to run it in some of these templates.
+
+___
+### DOCS BELOW HERE HAVEN'T BEEN UPDATED
+___
+
+It's super easy to start up a window.
+
+- Second, we need to start the desktop app with the same address:port as our Uvicorn server. We'll add this to our 'if __name__ == "__main__"' check at the bottom of main.py. We also place some logic at the bottom of this if statement to update our stop event when the windows closes, which will kill our Uvicorn server.
+```python
+# main.py
+
+if __name__ == "__main__":
+	# Start a thread to run the uvicorn server before we try to connect to it with pywebview
+	t = Thread(target=run_server)
+	t.daemon = True # this makes it so the server shuts down when the main program exits
+	t.start()
+
+	# Create our window with pywebview
+	webview.create_window(app_title, "http://127.0.0.1:5000", resizable=True, maximized=True)
+	webview.start(debug=True)
+
+	# Tell uvicorn to stop
+	stop_event.set()
+```
+
+And that's it! We now have a Python script that will open a local server, and run a desktop window connected to it. Now we can add add HTML content to our new app.
+
+- First, we have to tell FastAPI where we keep the rest of our app, since it won't look in our package folder by default. We're also going to be using Jinja2 to set up our HTML pages as templates that FastAPI can use.
+```python
+# main.py
+
+# Get the directory for all of our html page templates, and mount our path to the 'static' folder.
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+```
+
+- Second, we need to create a method to handle each page we want to display. In this case, we're displaying a loading page for 3 seconds, and then we're loading our main app page. The 3 second delay is handled in the javascript file attached to 'loading.html'.
+```python
+# main.py
+
+# Loading page
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+	return templates.TemplateResponse("loading.html", {"request": request})
+
+# Home page
+@app.get("/home", response_class=HTMLResponse)
+async def home(request: Request):
+	return templates.TemplateResponse("index.html", {"request": request})
+```
+```javascript
+// loading_script.js
+
+// This creates a timer of 3 seconds. The loading screen will play for that duration, and then load the main program.
+
+let count = 3;
+const timer = setInterval(function() {
+    count--;
+    console.log(count);
+    if (count === 0) {
+    clearInterval(timer);
+    console.log("Time's up!");
+    switchPage()
+    }
+}, 1000);
+
+function switchPage() {
+    document.location.href = '/home';
+}
+
+```
+```html
+<!---loading.html-->
+
+<link rel="stylesheet" href="/static/gui/loading.css">
+```
+Notice the *'@app.get("/", response_class=HTMLResponse)'* decorator for each of the pages in the Python code. The first argument passed to these (in this case "/", which is the root directory) is the "web" link our local frontend will connect to our backend through.
+
+A more basic decorator/function pair can look like this one from the official docs:
+```python
+@app.get("/hello-world")
+def hello_world():
+    return {"message": "Hello World"}
+```
+You can use 'app.put', 'app.delete', 'app.patch', 'app.get', and 'app.post' decorators to achieve different functionality. 
+
+In this case, we've created a function that will be run when the frontend sends a 'get' request to the '/hello-world' address of our application. These can also be run asyncronously in FastAPI with the 'async' function tag:
+```python
+@app.get("/hello-world")
+async def hello_world():
+    return {"message": "Hello World"}
+```
+There is both a 'POST' and a 'GET' http request example in this template:
+```python
+# main.py
+
+# Define a 'Value' class that contains the format of the 
+# info we'll pass back to Javascript in the 'POST'
+# request example below.
+class Value(BaseModel):
+	value: int
+
+# Handling an AJAX 'GET' request
+@app.get("/get")
+def get():
+	result = Functions.create_dictionary()
+	return(result)
+
+# Handling an AJAX 'POST' request
+@app.post("/post")
+async def create_item(value: Value):
+    return(value)
+```
+```javascript
+//ajax.js
+
+// Sends a 'GET' request to the specified URL
+function getData() { 
+    $.ajax({
+        url: '/get', 
+        type: 'GET', 
+        contentType: 'application/json', 
+        success: function(response) {
+            document.getElementById('div1').innerHTML = response['a'];
+            console.log(response)
+        }, 
+        error: function(error) { 
+            console.log(error); 
+        }
+    });
+};
+
+// Sends a 'POST' request to the specified URL
+function postData() {
+    let value = 10
+    $.ajax({
+        url: '/post', 
+        type: 'POST', 
+        contentType: 'application/json', 
+        data: JSON.stringify({ 'value' : value }), 
+        success: function(response) {
+            document.getElementById('div2').innerHTML = response['value'];
+            console.log(response)
+        }, 
+        error: function(error) { 
+            console.log(error); 
+        }
+    });
+};
+```
+```html
+<!--At the bottom of the body of our index.html file-->
+
+<script type="text/javascript" src="/static/gui/ajax.js"></script>
+```
+We can then call these functions with buttons using the HTML below:
+```HTML
+<!--index.html-->
+
+<button id="button1" onclick="getData()">I'm a Button</button>
+<div id="div1"></div>
+<button id="button2" onclick="postData()">I'm another Button</button>
+<div id="div2"></div>
+```
+The 'GET' example gets a dictionary that we generate in our Python 'engine' directory.
+
+The 'POST' example passes data from our frontend Javascript into any Python code we decide to use. In this case, we're reading the number '10' from Javascript, and then returning it into an HTML div. Some more details about using 'POST' requests can be found [here](https://teclado.com/fastapi-for-beginners/receiving-and-returning-data-with-fastapi/).
+
+And that's it for this quick guide! There's a *ton* more you can do with FastAPI, and I would encourage anyone reading to check out the [official documentation](https://fastapi.tiangolo.com/learn/) for more.
